@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Cuánto vale tu vivienda? — Calculadora gratuita</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <p class="header__nombre">Iván López · Asesor Inmobiliario SAFTI</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container container--narrow">
+
+            <h1 class="titulo">¿Cuánto vale tu vivienda?</h1>
+            <p class="subtitulo">Descubre el valor estimado de tu piso o casa en menos de 2 minutos. Gratis y sin compromiso.</p>
+
+            <form id="form-calculadora" class="form" novalidate>
+
+                <!-- Código postal -->
+                <div class="form__grupo">
+                    <label class="form__label" for="cp">Código postal *</label>
+                    <input class="form__input" type="text" id="cp" placeholder="08191" maxlength="5" required>
+                </div>
+
+                <!-- Tipo de inmueble -->
+                <div class="form__grupo">
+                    <label class="form__label" for="tipo_inmueble">Tipo de inmueble *</label>
+                    <select class="form__select" id="tipo_inmueble" required>
+                        <option value="">Selecciona...</option>
+                        <option value="14">Piso / Apartamento</option>
+                        <option value="15">Casa / Chalet</option>
+                    </select>
+                </div>
+
+                <!-- Superficie -->
+                <div class="form__grupo">
+                    <label class="form__label" for="superficie">Superficie construida (m²) *</label>
+                    <input class="form__input" type="number" id="superficie" placeholder="85" min="25" max="500" required>
+                </div>
+
+                <!-- Habitaciones -->
+                <div class="form__grupo">
+                    <label class="form__label" for="habitaciones">Habitaciones *</label>
+                    <select class="form__select" id="habitaciones" required>
+                        <option value="">Selecciona...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+
+                <!-- Baños -->
+                <div class="form__grupo">
+                    <label class="form__label" for="banos">Baños *</label>
+                    <select class="form__select" id="banos" required>
+                        <option value="">Selecciona...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3+</option>
+                    </select>
+                </div>
+
+                <!-- Planta -->
+                <div class="form__grupo">
+                    <label class="form__label" for="planta">Planta *</label>
+                    <select class="form__select" id="planta" required>
+                        <option value="">Selecciona...</option>
+                        <option value="bajo">Bajo / Entresuelo</option>
+                        <option value="1-2">1ª - 2ª</option>
+                        <option value="3-5">3ª - 5ª</option>
+                        <option value="6+">6ª o superior</option>
+                        <option value="atico">Ático</option>
+                    </select>
+                </div>
+
+                <!-- Ascensor -->
+                <div class="form__grupo">
+                    <label class="form__label" for="ascensor">Ascensor *</label>
+                    <select class="form__select" id="ascensor" required>
+                        <option value="">Selecciona...</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <!-- Estado -->
+                <div class="form__grupo">
+                    <label class="form__label" for="estado">Estado de conservación *</label>
+                    <select class="form__select" id="estado" required>
+                        <option value="">Selecciona...</option>
+                        <option value="a_reformar">A reformar</option>
+                        <option value="bueno">Bueno</option>
+                        <option value="muy_bueno">Muy bueno</option>
+                        <option value="a_estrenar">A estrenar / Reforma reciente</option>
+                    </select>
+                </div>
+
+                <!-- Terraza -->
+                <div class="form__grupo">
+                    <label class="form__label" for="tiene_terraza">¿Tiene terraza o balcón? *</label>
+                    <select class="form__select" id="tiene_terraza" required>
+                        <option value="">Selecciona...</option>
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+                </div>
+
+                <!-- m² terraza (condicional) -->
+                <div class="form__grupo" id="grupo_m2_terraza" style="display:none">
+                    <label class="form__label" for="m2_terraza">Superficie de la terraza (m²)</label>
+                    <input class="form__input" type="number" id="m2_terraza" placeholder="14" min="1">
+                </div>
+
+                <!-- Parking -->
+                <div class="form__grupo">
+                    <label class="form__label" for="tiene_parking">¿Incluye plaza de parking? *</label>
+                    <select class="form__select" id="tiene_parking" required>
+                        <option value="">Selecciona...</option>
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+                </div>
+
+                <!-- Trastero -->
+                <div class="form__grupo">
+                    <label class="form__label" for="tiene_trastero">¿Incluye trastero?</label>
+                    <select class="form__select" id="tiene_trastero">
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                    </select>
+                </div>
+
+                <!-- Año construcción (opcional) -->
+                <div class="form__grupo">
+                    <label class="form__label" for="anio">Año de construcción <span class="form__opcional">(opcional)</span></label>
+                    <select class="form__select" id="anio">
+                        <option value="">No lo sé</option>
+                        <option value="pre1960">Anterior a 1960</option>
+                        <option value="1960_79">1960 – 1979</option>
+                        <option value="1980_99">1980 – 1999</option>
+                        <option value="2000_2015">2000 – 2015</option>
+                        <option value="post2015">Posterior a 2015</option>
+                    </select>
+                </div>
+
+                <button class="btn btn--primary" type="submit">
+                    Ver el valor estimado →
+                </button>
+
+            </form>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>* Estimación basada en datos reales del <a href="https://penotariado.com" target="_blank">Portal Estadístico del Notariado</a>.</p>
+        </div>
+    </footer>
+
+    <script src="js/algoritmo.js"></script>
+    <script src="js/calculadora.js"></script>
+
+</body>
+</html>
