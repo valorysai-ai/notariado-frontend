@@ -44,24 +44,24 @@ function validarPaso1(f) {
         return 'La superficie mínima es 25 m².'
     if (f.superficie > 500)
         return 'Para superficies mayores de 500 m², contacta directamente.'
-    if (!f.tipo_inmueble)
+    if (!f.clase_finca_urbana_id || isNaN(f.clase_finca_urbana_id))
         return 'Selecciona el tipo de inmueble.'
     if (!f.habitaciones)
         return 'Selecciona el número de habitaciones.'
     if (!f.planta)
         return 'Selecciona la planta.'
-    if (f.ascensor === '')
+    if (document.getElementById('ascensor').value === '')
         return 'Indica si tiene ascensor.'
     if (!f.estado)
         return 'Selecciona el estado de conservación.'
-    if (f.tieneTerraza === '')
+    if (document.getElementById('tiene_terraza').value === '')
         return 'Indica si tiene terraza.'
-    if (f.tieneParking === '')
+    if (document.getElementById('tiene_parking').value === '')
         return 'Indica si incluye parking.'
     return null
 }
 
-function validarPaso2(nombre, email, telefono, rgpd) {
+function validarPaso2(email, telefono, rgpd) {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         return 'Introduce un email válido.'
     if (!telefono || !/^[679]\d{8}$/.test(telefono.replace(/\s/g, '')))
@@ -74,6 +74,7 @@ function validarPaso2(nombre, email, telefono, rgpd) {
 // ─── OBTENER FORMULARIO ───────────────────────────────────────────────────────
 
 function getFormulario() {
+    const tipoInmuebleVal = document.getElementById('tipo_inmueble').value
     return {
         cp:                    document.getElementById('cp').value.trim(),
         superficie:            parseFloat(document.getElementById('superficie').value),
@@ -82,7 +83,7 @@ function getFormulario() {
         planta:                document.getElementById('planta').value,
         ascensor:              document.getElementById('ascensor').value === 'true',
         estado:                document.getElementById('estado').value,
-        clase_finca_urbana_id: parseInt(document.getElementById('tipo_inmueble').value),
+        clase_finca_urbana_id: tipoInmuebleVal ? parseInt(tipoInmuebleVal) : null,
         tieneTerraza:          document.getElementById('tiene_terraza').value === 'true',
         m2Terraza:             parseFloat(document.getElementById('m2_terraza').value) || 0,
         tieneParking:          document.getElementById('tiene_parking').value === 'true',
@@ -108,17 +109,14 @@ function handlePaso1(e) {
     const resultado = calcularValoracion(formulario, precios)
     if (resultado.error) { alert(resultado.error); return }
 
-    // Guardar en sessionStorage
     sessionStorage.setItem('resultado', JSON.stringify(resultado))
     sessionStorage.setItem('formulario', JSON.stringify(formulario))
     sessionStorage.setItem('agente', getAgente())
 
-    // Pasar al paso 2
     document.getElementById('paso-1').style.display = 'none'
     document.getElementById('paso-2').style.display = 'block'
     actualizarProgreso(2)
 
-    // Scroll al formulario
     document.getElementById('calculadora').scrollIntoView({ behavior: 'smooth' })
 }
 
@@ -127,13 +125,13 @@ function handlePaso1(e) {
 async function handlePaso2(e) {
     e.preventDefault()
 
-    const nombre   = document.getElementById('nombre').value.trim()
-    const email    = document.getElementById('email').value.trim()
-    const telefono = document.getElementById('telefono').value.trim()
-    const rgpd     = document.getElementById('rgpd').checked
-    const rgpd_marketing = document.getElementById('rgpd_marketing').checked
+    const nombre         = document.getElementById('nombre').value.trim()
+    const email          = document.getElementById('email').value.trim()
+    const telefono       = document.getElementById('telefono').value.trim()
+    const rgpd           = document.getElementById('rgpd').checked
+    const rgpd_marketing = document.getElementById('rgpd_marketing') ? document.getElementById('rgpd_marketing').checked : false
 
-    const error = validarPaso2(nombre, email, telefono, rgpd)
+    const error = validarPaso2(email, telefono, rgpd)
     if (error) { alert(error); return }
 
     const resultado  = JSON.parse(sessionStorage.getItem('resultado'))
@@ -151,8 +149,8 @@ async function handlePaso2(e) {
         precio_estimado_bajo:  resultado.rangoBajo,
         precio_estimado_alto:  resultado.rangoAlto,
         nivel_dato:            resultado.nivel,
-        rgpd:                  document.getElementById('rgpd').checked,
-        rgpd_marketing:        document.getElementById('rgpd_marketing').checked,
+        rgpd:                  rgpd,
+        rgpd_marketing:        rgpd_marketing,
         agente,
         created_at:            new Date().toISOString()
     }
@@ -160,7 +158,6 @@ async function handlePaso2(e) {
     const enviado = await guardarLead(lead)
 
     if (enviado) {
-        // Redirigir a resultado
         window.location.href = 'resultado.html'
     } else {
         alert('Ha habido un error al guardar tus datos. Por favor inténtalo de nuevo.')
@@ -183,7 +180,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('form-calculadora').addEventListener('submit', handlePaso1)
     document.getElementById('form-lead').addEventListener('submit', handlePaso2)
 
-    // FAQ accordion
     document.querySelectorAll('.faq__pregunta').forEach(btn => {
         btn.addEventListener('click', () => {
             const item = btn.closest('.faq__item')
@@ -191,7 +187,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
     })
 
-    // Scroll suave al formulario desde el hero CTA
     document.querySelector('a[href="#calculadora"]')?.addEventListener('click', e => {
         e.preventDefault()
         document.getElementById('calculadora').scrollIntoView({ behavior: 'smooth' })
