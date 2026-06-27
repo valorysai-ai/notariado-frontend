@@ -1,7 +1,6 @@
 // ─── ESTADO ───────────────────────────────────────────────────────────────────
 
 let precios = null
-let resultado = null
 
 // ─── CARGAR DATOS ─────────────────────────────────────────────────────────────
 
@@ -11,43 +10,90 @@ async function cargarPrecios() {
     console.log('Precios cargados:', precios.snapshot_date)
 }
 
-// ─── MANEJO DEL FORMULARIO ────────────────────────────────────────────────────
+// ─── PARÁMETRO AGENTE ─────────────────────────────────────────────────────────
 
-function getFormulario() {
-    return {
-        cp:                   document.getElementById('cp').value.trim(),
-        superficie:           parseFloat(document.getElementById('superficie').value),
-        habitaciones:         parseInt(document.getElementById('habitaciones').value),
-        banos:                parseInt(document.getElementById('banos').value),
-        planta:               document.getElementById('planta').value,
-        ascensor:             document.getElementById('ascensor').value === 'true',
-        estado:               document.getElementById('estado').value,
-        clase_finca_urbana_id: parseInt(document.getElementById('tipo_inmueble').value),
-        tieneTerraza:         document.getElementById('tiene_terraza').value === 'true',
-        m2Terraza:            parseFloat(document.getElementById('m2_terraza').value) || 0,
-        tieneParking:         document.getElementById('tiene_parking').value === 'true',
-        tieneTrastero:        document.getElementById('tiene_trastero').value === 'true',
-        anio:                 document.getElementById('anio').value || null,
+function getAgente() {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('agente') || 'ivan-lopez-safti'
+}
+
+// ─── PROGRESO ─────────────────────────────────────────────────────────────────
+
+function actualizarProgreso(paso) {
+    const step1 = document.getElementById('progress-step-1')
+    const step2 = document.getElementById('progress-step-2')
+    const line  = document.getElementById('progress-line')
+
+    if (paso === 1) {
+        step1.className = 'form__progress-step active'
+        step2.className = 'form__progress-step'
+        line.className  = 'form__progress-line'
+    } else {
+        step1.className = 'form__progress-step done'
+        step2.className = 'form__progress-step active'
+        line.className  = 'form__progress-line done'
     }
 }
 
-function validarFormulario(f) {
-    if (!/^\d{5}$/.test(f.cp)) return 'El código postal debe tener 5 dígitos.'
-    if (isNaN(f.superficie) || f.superficie <= 0) return 'Introduce una superficie válida.'
-    if (isNaN(f.habitaciones) || f.habitaciones <= 0) return 'Selecciona el número de habitaciones.'
+// ─── VALIDACIONES ─────────────────────────────────────────────────────────────
+
+function validarPaso1(f) {
+    if (!/^\d{5}$/.test(f.cp))
+        return 'El código postal debe tener 5 dígitos.'
+    if (isNaN(f.superficie) || f.superficie < 25)
+        return 'La superficie mínima es 25 m².'
+    if (f.superficie > 500)
+        return 'Para superficies mayores de 500 m², contacta directamente.'
+    if (!f.tipo_inmueble)
+        return 'Selecciona el tipo de inmueble.'
+    if (!f.habitaciones)
+        return 'Selecciona el número de habitaciones.'
+    if (!f.planta)
+        return 'Selecciona la planta.'
+    if (f.ascensor === '')
+        return 'Indica si tiene ascensor.'
+    if (!f.estado)
+        return 'Selecciona el estado de conservación.'
+    if (f.tieneTerraza === '')
+        return 'Indica si tiene terraza.'
+    if (f.tieneParking === '')
+        return 'Indica si incluye parking.'
     return null
 }
 
-// ─── MOSTRAR / OCULTAR CAMPO TERRAZA ─────────────────────────────────────────
-
-function toggleTerraza() {
-    const tieneTerraza = document.getElementById('tiene_terraza').value === 'true'
-    document.getElementById('grupo_m2_terraza').style.display = tieneTerraza ? 'block' : 'none'
+function validarPaso2(nombre, email, telefono, rgpd) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return 'Introduce un email válido.'
+    if (!telefono || !/^[679]\d{8}$/.test(telefono.replace(/\s/g, '')))
+        return 'Introduce un teléfono español válido (9 dígitos, empieza por 6, 7 o 9).'
+    if (!rgpd)
+        return 'Debes aceptar la política de privacidad para continuar.'
+    return null
 }
 
-// ─── CALCULAR ─────────────────────────────────────────────────────────────────
+// ─── OBTENER FORMULARIO ───────────────────────────────────────────────────────
 
-async function calcular(e) {
+function getFormulario() {
+    return {
+        cp:                    document.getElementById('cp').value.trim(),
+        superficie:            parseFloat(document.getElementById('superficie').value),
+        habitaciones:          parseInt(document.getElementById('habitaciones').value),
+        banos:                 parseInt(document.getElementById('banos').value),
+        planta:                document.getElementById('planta').value,
+        ascensor:              document.getElementById('ascensor').value === 'true',
+        estado:                document.getElementById('estado').value,
+        clase_finca_urbana_id: parseInt(document.getElementById('tipo_inmueble').value),
+        tieneTerraza:          document.getElementById('tiene_terraza').value === 'true',
+        m2Terraza:             parseFloat(document.getElementById('m2_terraza').value) || 0,
+        tieneParking:          document.getElementById('tiene_parking').value === 'true',
+        tieneTrastero:         document.getElementById('tiene_trastero').value === 'true',
+        anio:                  document.getElementById('anio').value || null,
+    }
+}
+
+// ─── PASO 1 — CALCULAR ────────────────────────────────────────────────────────
+
+function handlePaso1(e) {
     e.preventDefault()
 
     if (!precios) {
@@ -56,25 +102,75 @@ async function calcular(e) {
     }
 
     const formulario = getFormulario()
-    const error = validarFormulario(formulario)
-    if (error) {
-        alert(error)
-        return
-    }
+    const error = validarPaso1(formulario)
+    if (error) { alert(error); return }
 
-    resultado = calcularValoracion(formulario, precios)
+    const resultado = calcularValoracion(formulario, precios)
+    if (resultado.error) { alert(resultado.error); return }
 
-    if (resultado.error) {
-        alert(resultado.error)
-        return
-    }
-
-    // Guardar en sessionStorage para resultado.html
+    // Guardar en sessionStorage
     sessionStorage.setItem('resultado', JSON.stringify(resultado))
     sessionStorage.setItem('formulario', JSON.stringify(formulario))
+    sessionStorage.setItem('agente', getAgente())
 
-    // Redirigir a página de resultado
-    window.location.href = 'resultado.html'
+    // Pasar al paso 2
+    document.getElementById('paso-1').style.display = 'none'
+    document.getElementById('paso-2').style.display = 'block'
+    actualizarProgreso(2)
+
+    // Scroll al formulario
+    document.getElementById('calculadora').scrollIntoView({ behavior: 'smooth' })
+}
+
+// ─── PASO 2 — CAPTURAR LEAD ───────────────────────────────────────────────────
+
+async function handlePaso2(e) {
+    e.preventDefault()
+
+    const nombre   = document.getElementById('nombre').value.trim()
+    const email    = document.getElementById('email').value.trim()
+    const telefono = document.getElementById('telefono').value.trim()
+    const rgpd     = document.getElementById('rgpd').checked
+    const rgpd_marketing = document.getElementById('rgpd_marketing').checked
+
+    const error = validarPaso2(nombre, email, telefono, rgpd)
+    if (error) { alert(error); return }
+
+    const resultado  = JSON.parse(sessionStorage.getItem('resultado'))
+    const formulario = JSON.parse(sessionStorage.getItem('formulario'))
+    const agente     = sessionStorage.getItem('agente') || 'ivan-lopez-safti'
+
+    const lead = {
+        nombre,
+        email,
+        telefono,
+        cp:                    formulario.cp,
+        superficie:            formulario.superficie,
+        tipo_inmueble:         formulario.clase_finca_urbana_id === 14 ? 'Piso' : 'Casa',
+        estado:                formulario.estado,
+        precio_estimado_bajo:  resultado.rangoBajo,
+        precio_estimado_alto:  resultado.rangoAlto,
+        nivel_dato:            resultado.nivel,
+        rgpd_marketing,
+        agente,
+        created_at:            new Date().toISOString()
+    }
+
+    const enviado = await guardarLead(lead)
+
+    if (enviado) {
+        // Redirigir a resultado
+        window.location.href = 'resultado.html'
+    } else {
+        alert('Ha habido un error al guardar tus datos. Por favor inténtalo de nuevo.')
+    }
+}
+
+// ─── TOGGLE TERRAZA ───────────────────────────────────────────────────────────
+
+function toggleTerraza() {
+    const tieneTerraza = document.getElementById('tiene_terraza').value === 'true'
+    document.getElementById('grupo_m2_terraza').style.display = tieneTerraza ? 'flex' : 'none'
 }
 
 // ─── INICIALIZAR ──────────────────────────────────────────────────────────────
@@ -83,7 +179,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     await cargarPrecios()
 
     document.getElementById('tiene_terraza').addEventListener('change', toggleTerraza)
-    document.getElementById('form-calculadora').addEventListener('submit', calcular)
+    document.getElementById('form-calculadora').addEventListener('submit', handlePaso1)
+    document.getElementById('form-lead').addEventListener('submit', handlePaso2)
+
+    // FAQ accordion
+    document.querySelectorAll('.faq__pregunta').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.faq__item')
+            item.classList.toggle('open')
+        })
+    })
+
+    // Scroll suave al formulario desde el hero CTA
+    document.querySelector('a[href="#calculadora"]')?.addEventListener('click', e => {
+        e.preventDefault()
+        document.getElementById('calculadora').scrollIntoView({ behavior: 'smooth' })
+    })
 
     toggleTerraza()
+    actualizarProgreso(1)
 })
