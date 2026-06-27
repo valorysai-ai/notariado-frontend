@@ -3,73 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultado de tu valoración — Iván López SAFTI</title>
+    <title>Tu estimación — Iván López SAFTI</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+    <!-- HEADER -->
     <header class="header">
         <div class="container">
-            <p class="header__nombre">Iván López · Asesor Inmobiliario SAFTI</p>
+            <div class="header__inner">
+                <div class="header__logo">Iván López <span>· SAFTI</span></div>
+                <div class="header__badge">🏠 Asesor Inmobiliario</div>
+            </div>
         </div>
     </header>
 
-    <main class="main">
-        <div class="container container--narrow">
+    <!-- RESULTADO HERO -->
+    <section class="resultado-hero">
+        <div class="container--narrow">
+            <div class="resultado__emoji">🎉</div>
+            <p class="resultado__titulo">El valor estimado de tu vivienda es</p>
+            <div class="resultado__rango">
+                <span id="rango-bajo">—</span>
+                <span style="color:var(--text-muted)"> — </span>
+                <span id="rango-alto">—</span>
+            </div>
+            <p class="resultado__central">Precio central estimado: <strong id="precio-central">—</strong></p>
+            <p class="resultado__central">Precio estimado por m²: <strong id="precio-m2">—</strong></p>
+            <p class="resultado__detalle" id="resultado-detalle"></p>
 
-            <!-- BLOQUE 1: Resultado -->
-            <div class="resultado__bloque">
-                <p class="resultado__label">El valor estimado de tu vivienda está entre</p>
-                <div class="resultado__rango">
-                    <span id="rango-bajo">—</span>
-                    <span class="resultado__separador"> — </span>
-                    <span id="rango-alto">—</span>
-                </div>
-                <p class="resultado__detalle" id="resultado-detalle"></p>
-                <p class="resultado__aviso" id="resultado-aviso" style="display:none"></p>
+            <div class="resultado__badges">
+                <span class="badge badge--green" id="badge-precision">⭐ Precisión ~90%</span>
+                <span class="badge badge--blue">📊 Datos del Notariado</span>
+                <span class="badge badge--green" id="badge-fecha"></span>
             </div>
 
-            <!-- BLOQUE 2: CTA -->
-            <div class="cta__bloque">
-                <h2 class="cta__titulo">¿Quieres saber el precio exacto al que podrías vender tu vivienda?</h2>
-                <p class="cta__texto">Iván López, asesor inmobiliario SAFTI, te ofrece una <strong>valoración profesional gratuita</strong> con visita al inmueble.</p>
+            <div class="resultado__aviso" id="resultado-aviso" style="display:none"></div>
+        </div>
+    </section>
 
-                <form id="form-lead" class="form form--lead">
-                    <div class="form__grupo">
-                        <label class="form__label" for="nombre">Nombre *</label>
-                        <input class="form__input" type="text" id="nombre" placeholder="Tu nombre" required>
-                    </div>
-                    <div class="form__grupo">
-                        <label class="form__label" for="email">Email *</label>
-                        <input class="form__input" type="email" id="email" placeholder="tu@email.com" required>
-                    </div>
-                    <div class="form__grupo">
-                        <label class="form__label" for="telefono">Teléfono</label>
-                        <input class="form__input" type="tel" id="telefono" placeholder="600 000 000">
-                    </div>
-                    <button class="btn btn--primary" type="submit">
-                        Solicitar valoración gratuita →
+    <!-- CTA -->
+    <section class="resultado-cta">
+        <div class="container--narrow">
+            <div class="cta-card">
+                <h2 class="cta-card__titulo">¿Quieres una valoración más precisa?</h2>
+                <p class="cta-card__texto">Iván López, asesor inmobiliario SAFTI, te ofrece una <strong>valoración profesional gratuita</strong> con visita al inmueble. Sin compromiso.</p>
+
+                <div class="cta-card__botones">
+                    <a id="btn-whatsapp" href="#" class="btn btn--whatsapp" target="_blank">
+                        💬 Hablar con Iván por WhatsApp
+                    </a>
+                    <button class="btn btn--secondary" id="btn-recalcular" onclick="window.location.href='index.html'">
+                        ← Calcular otra vivienda
                     </button>
-                </form>
+                </div>
 
-                <div id="lead-enviado" style="display:none" class="lead__confirmacion">
-                    <p>✅ ¡Recibido! Iván se pondrá en contacto contigo en menos de 24h.</p>
+                <div id="lead-enviado" class="lead__confirmacion" style="margin-top:20px">
+                    ✅ ¡Recibido! Iván se pondrá en contacto contigo en menos de 24h.
                 </div>
             </div>
 
-            <!-- BLOQUE 3: Disclaimer -->
-            <p class="disclaimer">
+            <!-- Disclaimer -->
+            <p class="disclaimer" style="margin-top:24px">
                 * Esta estimación es orientativa y se basa en los precios reales de venta del 
                 <a href="https://penotariado.com" target="_blank">Portal Estadístico del Notariado</a>. 
                 El precio final de mercado depende de factores que solo se pueden valorar con una visita profesional.
             </p>
-
         </div>
-    </main>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p>© 2026 Iván López · Asesor Inmobiliario SAFTI · 
+                <a href="legal.html#privacidad" style="color:#6b7280">Privacidad</a> · 
+                <a href="legal.html#aviso" style="color:#6b7280">Aviso Legal</a></p>
+            </div>
+        </div>
+    </footer>
 
     <script src="js/algoritmo.js"></script>
     <script src="js/resultado.js"></script>
-    <script src="js/supabase.js"></script>
 
 </body>
 </html>

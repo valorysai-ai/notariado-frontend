@@ -1,4 +1,4 @@
-// ─── FORMATEAR NÚMERO ─────────────────────────────────────────────────────────
+// ─── FORMATEAR NÚMEROS ────────────────────────────────────────────────────────
 
 function formatEuros(cantidad) {
     return new Intl.NumberFormat('es-ES', {
@@ -8,73 +8,76 @@ function formatEuros(cantidad) {
     }).format(cantidad)
 }
 
+// ─── CALCULAR PRECISIÓN ───────────────────────────────────────────────────────
+
+function calcularPrecision(resultado, formulario) {
+    let precision = 90
+
+    // Menos preciso si usamos fallback
+    if (resultado.nivel === 'municipio') precision -= 5
+    if (resultado.nivel === 'provincia') precision -= 15
+
+    // Más preciso si tenemos más datos
+    if (formulario.anio) precision += 2
+    if (formulario.tieneTerraza !== '') precision += 1
+    if (formulario.tieneParking !== '') precision += 1
+
+    return Math.min(95, Math.max(60, precision))
+}
+
 // ─── MOSTRAR RESULTADO ────────────────────────────────────────────────────────
 
 function mostrarResultado() {
-    const resultadoRaw = sessionStorage.getItem('resultado')
+    const resultadoRaw  = sessionStorage.getItem('resultado')
     const formularioRaw = sessionStorage.getItem('formulario')
 
-    // Si no hay datos redirigir al formulario
     if (!resultadoRaw || !formularioRaw) {
         window.location.href = 'index.html'
         return
     }
 
-    const resultado = JSON.parse(resultadoRaw)
+    const resultado  = JSON.parse(resultadoRaw)
     const formulario = JSON.parse(formularioRaw)
 
-    // Mostrar rango
+    // Rango
     document.getElementById('rango-bajo').textContent = formatEuros(resultado.rangoBajo)
     document.getElementById('rango-alto').textContent = formatEuros(resultado.rangoAlto)
 
-    // Mostrar detalle del inmueble
+    // Precio central y por m²
+    document.getElementById('precio-central').textContent = formatEuros(resultado.valorCentral)
+    const precioM2 = Math.round(resultado.valorCentral / formulario.superficie)
+    document.getElementById('precio-m2').textContent = formatEuros(precioM2) + '/m²'
+
+    // Detalle
     const tipoInmueble = formulario.clase_finca_urbana_id === 14 ? 'Piso' : 'Casa'
     document.getElementById('resultado-detalle').textContent =
         `${formulario.cp} · ${formulario.superficie} m² · ${formulario.habitaciones} hab · ${tipoInmueble}`
 
-    // Mostrar aviso si hay fallback
+    // Badge precisión
+    const precision = calcularPrecision(resultado, formulario)
+    document.getElementById('badge-precision').textContent = `⭐ Precisión ~${precision}%`
+
+    // Badge fecha
+    const fecha = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+    document.getElementById('badge-fecha').textContent = `📅 Actualizado ${fecha}`
+
+    // Aviso fallback
     if (resultado.aviso) {
         const avisoEl = document.getElementById('resultado-aviso')
         avisoEl.textContent = resultado.aviso
         avisoEl.style.display = 'block'
     }
-}
 
-// ─── MANEJO DEL LEAD ──────────────────────────────────────────────────────────
-
-async function enviarLead(e) {
-    e.preventDefault()
-
-    const resultado = JSON.parse(sessionStorage.getItem('resultado'))
-    const formulario = JSON.parse(sessionStorage.getItem('formulario'))
-
-    const lead = {
-        nombre:                document.getElementById('nombre').value.trim(),
-        email:                 document.getElementById('email').value.trim(),
-        telefono:              document.getElementById('telefono').value.trim(),
-        cp:                    formulario.cp,
-        superficie:            formulario.superficie,
-        tipo_inmueble:         formulario.clase_finca_urbana_id === 14 ? 'Piso' : 'Casa',
-        estado:                formulario.estado,
-        precio_estimado_bajo:  resultado.rangoBajo,
-        precio_estimado_alto:  resultado.rangoAlto,
-        nivel_dato:            resultado.nivel,
-        created_at:            new Date().toISOString()
-    }
-
-    const enviado = await guardarLead(lead)
-
-    if (enviado) {
-        document.getElementById('form-lead').style.display = 'none'
-        document.getElementById('lead-enviado').style.display = 'block'
-    } else {
-        alert('Ha habido un error. Por favor inténtalo de nuevo.')
-    }
+    // WhatsApp dinámico
+    const agente = sessionStorage.getItem('agente') || 'ivan-lopez-safti'
+    const mensaje = encodeURIComponent(
+        `Hola Iván, acabo de obtener una estimación de ${formatEuros(resultado.rangoBajo)} - ${formatEuros(resultado.rangoAlto)} para mi vivienda en ${formulario.cp}. Me gustaría una valoración profesional.`
+    )
+    document.getElementById('btn-whatsapp').href = `https://wa.me/34600000000?text=${mensaje}`
 }
 
 // ─── INICIALIZAR ──────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
     mostrarResultado()
-    document.getElementById('form-lead').addEventListener('submit', enviarLead)
 })
