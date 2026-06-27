@@ -151,7 +151,8 @@ async function handlePaso2(e) {
         precio_estimado_bajo:  resultado.rangoBajo,
         precio_estimado_alto:  resultado.rangoAlto,
         nivel_dato:            resultado.nivel,
-        rgpd_marketing,
+        rgpd:                  document.getElementById('rgpd').checked,
+        rgpd_marketing:        document.getElementById('rgpd_marketing').checked,
         agente,
         created_at:            new Date().toISOString()
     }
