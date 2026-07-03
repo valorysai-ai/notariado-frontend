@@ -67,13 +67,6 @@ function mostrarResultado() {
         avisoEl.textContent = resultado.aviso
         avisoEl.style.display = 'block'
     }
-
-    // WhatsApp dinámico
-    const agente = sessionStorage.getItem('agente') || 'ivan-lopez-safti'
-    const mensaje = encodeURIComponent(
-        `Hola Iván, acabo de obtener una estimación de ${formatEuros(resultado.rangoBajo)} - ${formatEuros(resultado.rangoAlto)} para mi vivienda en ${formulario.cp}. Me gustaría una valoración profesional.`
-    )
-    document.getElementById('btn-whatsapp').href = `https://wa.me/34600000000?text=${mensaje}`
 }
 
 // ─── INICIALIZAR ──────────────────────────────────────────────────────────────
