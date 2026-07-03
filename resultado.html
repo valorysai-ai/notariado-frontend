@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu estimación — Iván López SAFTI</title>
+    <title>Tu estimación — Calculadora de Valoración Inmobiliaria</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2212%22 fill=%22%2310b981%22/><text x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22system-ui%22>⌂</text></svg>" type="image/svg+xml">
     <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2212%22 fill=%22%2310b981%22/><text x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22system-ui%22>⌂</text></svg>" type="image/svg+xml">
@@ -14,8 +14,8 @@
     <header class="header">
         <div class="container">
             <div class="header__inner">
-                <div class="header__logo">Iván López <span>· SAFTI</span></div>
-                <div class="header__badge">🏠 Asesor Inmobiliario</div>
+                <div class="header__logo">Iván López <span>· Asesor Inmobiliario</span></div>
+                <div class="header__badge">🏠 Valoración gratuita</div>
             </div>
         </div>
     </header>
@@ -24,14 +24,12 @@
     <section class="resultado-hero">
         <div class="container--narrow">
             <div class="resultado__emoji">🎉</div>
-            <p class="resultado__titulo">El valor estimado de tu vivienda es</p>
+            <p class="resultado__titulo">El valor estimado de tu vivienda está entre</p>
             <div class="resultado__rango">
                 <span id="rango-bajo">—</span>
                 <span style="color:var(--text-muted)"> — </span>
                 <span id="rango-alto">—</span>
             </div>
-            <p class="resultado__central">Precio central estimado: <strong id="precio-central">—</strong></p>
-            <p class="resultado__central">Precio estimado por m²: <strong id="precio-m2">—</strong></p>
             <p class="resultado__detalle" id="resultado-detalle"></p>
 
             <div class="resultado__badges">
@@ -48,21 +46,16 @@
     <section class="resultado-cta">
         <div class="container--narrow">
             <div class="cta-card">
-                <h2 class="cta-card__titulo">¿Quieres una valoración más precisa?</h2>
-                <p class="cta-card__texto">Iván López, asesor inmobiliario SAFTI, te ofrece una <strong>valoración profesional gratuita</strong> con visita al inmueble. Sin compromiso.</p>
+                <h2 class="cta-card__titulo">¿Quieres saber el precio exacto al que podrías venderla?</h2>
+                <p class="cta-card__texto">Iván López, asesor inmobiliario, te ofrece una <strong>valoración profesional gratuita</strong> con visita al inmueble. Sin compromiso.</p>
 
                 <div class="cta-card__botones">
                     <a href="index.html" class="btn btn--secondary">
                         ← Calcular otra vivienda
                     </a>
                 </div>
-
-                <div id="lead-enviado" class="lead__confirmacion" style="margin-top:20px">
-                    ✅ ¡Recibido! Iván se pondrá en contacto contigo en menos de 24h.
-                </div>
             </div>
 
-            <!-- Disclaimer -->
             <p class="disclaimer" style="margin-top:24px">
                 * Esta estimación es orientativa y se basa en los precios reales de venta del 
                 <a href="https://penotariado.com" target="_blank">Portal Estadístico del Notariado</a>. 
@@ -75,7 +68,7 @@
     <footer class="footer">
         <div class="container">
             <div class="footer__bottom">
-                <p>© 2026 Iván López · Asesor Inmobiliario SAFTI · 
+                <p>© 2026 Iván López · Asesor Inmobiliario · 
                 <a href="legal.html#privacidad" style="color:#6b7280">Privacidad</a> · 
                 <a href="legal.html#aviso" style="color:#6b7280">Aviso Legal</a></p>
             </div>
