@@ -13,11 +13,9 @@ function formatEuros(cantidad) {
 function calcularPrecision(resultado, formulario) {
     let precision = 90
 
-    // Menos preciso si usamos fallback
     if (resultado.nivel === 'municipio') precision -= 5
     if (resultado.nivel === 'provincia') precision -= 15
 
-    // Más preciso si tenemos más datos
     if (formulario.anio) precision += 2
     if (formulario.tieneTerraza !== '') precision += 1
     if (formulario.tieneParking !== '') precision += 1
@@ -43,11 +41,6 @@ function mostrarResultado() {
     document.getElementById('rango-bajo').textContent = formatEuros(resultado.rangoBajo)
     document.getElementById('rango-alto').textContent = formatEuros(resultado.rangoAlto)
 
-    // Precio central y por m²
-    document.getElementById('precio-central').textContent = formatEuros(resultado.valorCentral)
-    const precioM2 = Math.round(resultado.valorCentral / formulario.superficie)
-    document.getElementById('precio-m2').textContent = formatEuros(precioM2) + '/m²'
-
     // Detalle
     const tipoInmueble = formulario.clase_finca_urbana_id === 14 ? 'Piso' : 'Casa'
     document.getElementById('resultado-detalle').textContent =
@@ -59,7 +52,9 @@ function mostrarResultado() {
 
     // Badge fecha
     const fecha = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
-    document.getElementById('badge-fecha').textContent = `📅 Actualizado ${fecha}`
+    const badgeFecha = document.getElementById('badge-fecha')
+    badgeFecha.textContent = `📅 Actualizado ${fecha}`
+    badgeFecha.style.display = 'inline-flex'
 
     // Aviso fallback
     if (resultado.aviso) {
