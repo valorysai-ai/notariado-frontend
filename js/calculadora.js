@@ -61,7 +61,9 @@ function validarPaso1(f) {
     return null
 }
 
-function validarPaso2(email, telefono, rgpd) {
+function validarPaso2(nombre, email, telefono, rgpd) {
+    if (!nombre)
+        return 'Introduce tu nombre.'
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         return 'Introduce un email válido.'
     if (!telefono || !/^[679]\d{8}$/.test(telefono.replace(/\s/g, '')))
@@ -131,7 +133,7 @@ async function handlePaso2(e) {
     const rgpd           = document.getElementById('rgpd').checked
     const rgpd_marketing = document.getElementById('rgpd_marketing') ? document.getElementById('rgpd_marketing').checked : false
 
-    const error = validarPaso2(email, telefono, rgpd)
+    const error = validarPaso2(nombre, email, telefono, rgpd)
     if (error) { alert(error); return }
 
     const resultado  = JSON.parse(sessionStorage.getItem('resultado'))
