@@ -1,7 +1,7 @@
 // ─── CONFIGURACIÓN SUPABASE ───────────────────────────────────────────────────
 
 const SUPABASE_URL = 'https://aoauaprfomyzssovoebf.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvYXVhcHJmb215enNzb3ZvZWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODU4NDgsImV4cCI6MjA5Nzg2MTg0OH0.nuYb3PYn5eFEZvSSZyDeoSu0uKpZN9eoCq43BVeZgko'
+const SUPABASE_ANON_KEY = 'sb_publishable_s53gKxpAyPcUihgX6RX7gA_VlNL79kj'
 
 // ─── GUARDAR LEAD ─────────────────────────────────────────────────────────────
 
