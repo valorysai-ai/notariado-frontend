@@ -157,11 +157,19 @@ async function handlePaso2(e) {
         created_at:            new Date().toISOString()
     }
 
+    // ── Activar spinner ──
+    const btn = e.submitter || document.querySelector('#form-lead button[type="submit"]')
+    btn.classList.add('btn--loading')
+    btn.disabled = true
+
     const enviado = await guardarLead(lead)
 
     if (enviado) {
         window.location.href = 'resultado.html'
     } else {
+        // ── Desactivar spinner si hay error ──
+        btn.classList.remove('btn--loading')
+        btn.disabled = false
         alert('Ha habido un error al guardar tus datos. Por favor inténtalo de nuevo.')
     }
 }
