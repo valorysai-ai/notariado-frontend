@@ -164,14 +164,13 @@ async function handlePaso2(e) {
 
     const enviado = await guardarLead(lead)
 
-    if (enviado) {
-        window.location.href = 'resultado.html'
-    } else {
-        // ── Desactivar spinner si hay error ──
-        btn.classList.remove('btn--loading')
-        btn.disabled = false
-        alert('Ha habido un error al guardar tus datos. Por favor inténtalo de nuevo.')
+    if (!enviado) {
+        // Supabase falló — guardamos aviso para mostrarlo en resultado.html
+        sessionStorage.setItem('supabase_error', 'true')
     }
+
+    // Redirigir siempre — el resultado está en sessionStorage
+    window.location.href = 'resultado.html'
 }
 
 // ─── TOGGLE TERRAZA ───────────────────────────────────────────────────────────
@@ -185,6 +184,9 @@ function toggleTerraza() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarPrecios()
+
+    // Reenviar lead pendiente si hay uno
+    await reenviarLeadPendiente()
 
     document.getElementById('tiene_terraza').addEventListener('change', toggleTerraza)
     document.getElementById('form-calculadora').addEventListener('submit', handlePaso1)

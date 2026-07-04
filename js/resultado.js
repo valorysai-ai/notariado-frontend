@@ -62,6 +62,14 @@ function mostrarResultado() {
         avisoEl.textContent = resultado.aviso
         avisoEl.style.display = 'block'
     }
+    
+    // Aviso si Supabase falló
+    if (sessionStorage.getItem('supabase_error') === 'true') {
+        sessionStorage.removeItem('supabase_error')
+        const avisoEl = document.getElementById('resultado-aviso')
+        avisoEl.textContent = '⚠️ No hemos podido registrar tus datos en este momento. Tu estimación es válida — intentaremos guardarla automáticamente en tu próxima visita.'
+        avisoEl.style.display = 'block'
+    }
 }
 
 // ─── INICIALIZAR ──────────────────────────────────────────────────────────────
