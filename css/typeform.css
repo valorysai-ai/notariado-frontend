@@ -75,6 +75,8 @@
     min-height: 100vh;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ─── STEPS ──────────────────────────────────────────────────────────────────── */
@@ -89,6 +91,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 24px;
+    box-sizing: border-box;
     opacity: 0;
     pointer-events: none;
     transform: translateX(60px);
@@ -101,6 +104,7 @@
     pointer-events: all;
     transform: translateX(0);
     position: relative;
+    min-height: calc(100vh - 64px);
 }
 
 .tf-step.exit-left {
