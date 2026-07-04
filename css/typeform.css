@@ -2,8 +2,8 @@
 
 .tf-body {
     background: var(--white);
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ─── HEADER ─────────────────────────────────────────────────────────────────── */
@@ -17,11 +17,15 @@
     background: var(--white);
     border-bottom: 1px solid var(--border);
     padding: 14px 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
 }
 
 .tf-header__inner {
     max-width: 720px;
     margin: 0 auto;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -71,27 +75,24 @@
 /* ─── MAIN ───────────────────────────────────────────────────────────────────── */
 
 .tf-main {
-    padding-top: 64px;
-    min-height: 100vh;
-    position: relative;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
 /* ─── STEPS ──────────────────────────────────────────────────────────────────── */
 
 .tf-step {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-height: calc(100vh - 64px);
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px 24px;
-    box-sizing: border-box;
+    overflow-y: auto;
     opacity: 0;
     pointer-events: none;
     transform: translateX(60px);
@@ -103,14 +104,11 @@
     opacity: 1;
     pointer-events: all;
     transform: translateX(0);
-    position: relative;
-    min-height: calc(100vh - 64px);
 }
 
 .tf-step.exit-left {
     opacity: 0;
     transform: translateX(-60px);
-    position: absolute;
     transition: transform 0.4s cubic-bezier(0.4, 0, 1, 1),
                 opacity 0.3s ease;
 }
@@ -118,6 +116,7 @@
 .tf-step__inner {
     max-width: 600px;
     width: 100%;
+    padding: 20px 0;
 }
 
 .tf-step__num {
