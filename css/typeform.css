@@ -2,8 +2,8 @@
 
 .tf-body {
     background: var(--white);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* ─── HEADER ─────────────────────────────────────────────────────────────────── */
@@ -75,11 +75,9 @@
 /* ─── MAIN ───────────────────────────────────────────────────────────────────── */
 
 .tf-main {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    margin-top: 56px;
+    min-height: calc(100vh - 56px);
     overflow: hidden;
 }
 
@@ -87,12 +85,11 @@
 
 .tf-step {
     position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-    overflow-y: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: calc(100vh - 56px);
+    padding: 60px 24px 80px;
     opacity: 0;
     pointer-events: none;
     transform: translateX(60px);
@@ -104,11 +101,14 @@
     opacity: 1;
     pointer-events: all;
     transform: translateX(0);
+    position: relative;
+    overflow-y: auto;
 }
 
 .tf-step.exit-left {
     opacity: 0;
     transform: translateX(-60px);
+    position: absolute;
     transition: transform 0.4s cubic-bezier(0.4, 0, 1, 1),
                 opacity 0.3s ease;
 }
@@ -116,14 +116,14 @@
 .tf-step__inner {
     max-width: 600px;
     width: 100%;
-    padding: 20px 0;
+    margin: 0 auto;
 }
 
 .tf-step__num {
     font-size: 13px;
     font-weight: 600;
     color: var(--primary);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     letter-spacing: 0.05em;
 }
 
@@ -138,7 +138,7 @@
 .tf-step__subtitulo {
     font-size: 15px;
     color: var(--text-muted);
-    margin-bottom: 32px;
+    margin-bottom: 36px;
     line-height: 1.6;
 }
 
@@ -332,6 +332,7 @@
     align-items: center;
     gap: 12px;
     margin-top: 8px;
+    padding-bottom: 40px;
 }
 
 .tf-btn {
