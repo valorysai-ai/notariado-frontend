@@ -43,40 +43,47 @@ function showStep(from, to, direction) {
     const fromEl = document.getElementById(`step-${from}`)
     const toEl   = document.getElementById(`step-${to}`)
 
-    // Salida del step actual
-    fromEl.classList.remove('active')
-    fromEl.classList.add('exit-left')
+    // Preparar el step de destino fuera de pantalla
+    toEl.style.transition = 'none'
+    toEl.style.transform  = direction === 'back' ? 'translateX(-60px)' : 'translateX(60px)'
+    toEl.style.opacity    = '0'
+    toEl.style.position   = 'absolute'
+    toEl.classList.remove('active', 'exit-left')
 
-    // Si vamos hacia atrás invertimos la animación
-    if (direction === 'back') {
-        fromEl.style.transform = 'translateX(100%)'
-        toEl.style.transform   = 'translateX(-100%)'
-    } else {
-        fromEl.style.transform = ''
-        toEl.style.transform   = ''
-    }
+    // Forzar reflow
+    toEl.offsetHeight
 
-    // Pequeño delay para que la animación sea suave
+    // Animar salida del step actual
+    fromEl.style.transition = ''
+    fromEl.style.transform  = direction === 'back' ? 'translateX(60px)' : 'translateX(-60px)'
+    fromEl.style.opacity    = '0'
+
+    // Animar entrada del nuevo step
+    toEl.style.transition = ''
+    toEl.style.transform  = 'translateX(0)'
+    toEl.style.opacity    = '1'
+    toEl.style.position   = 'relative'
+
     setTimeout(() => {
-        fromEl.classList.remove('exit-left')
-        fromEl.style.transform = ''
-        toEl.style.transform   = ''
+        fromEl.classList.remove('active')
+        fromEl.style.cssText = ''
+        fromEl.style.position = 'absolute'
+
         toEl.classList.add('active')
+        toEl.style.cssText = ''
+
         actualizarProgreso(to)
         currentStep = to
 
-        // Focus automático en inputs de texto
+        // Focus automático
         const input = toEl.querySelector('.tf-input')
-        if (input && input.type !== 'number') {
-            setTimeout(() => input.focus(), 100)
-        }
+        if (input) setTimeout(() => input.focus(), 100)
 
-        // Restaurar selección previa si existe
+        // Restaurar selección previa
         restaurarSeleccion(to)
 
-        // Scroll al top
         window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, 50)
+    }, 600)
 }
 
 function nextStep(from) {
