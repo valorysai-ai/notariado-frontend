@@ -378,6 +378,12 @@ async function buscarCP(cp) {
 // ─── SUBMIT LEAD ──────────────────────────────────────────────────────────────
 
 async function submitLead() {
+    // Anti-bot: verificar honeypot PRIMERO
+    if (document.getElementById('tf-honeypot').value) {
+        window.location.href = 'resultado.html'
+        return
+    }
+
     const nombre   = document.getElementById('tf-nombre').value.trim()
     const email    = document.getElementById('tf-email').value.trim()
     const telefono = document.getElementById('tf-telefono').value.trim()
