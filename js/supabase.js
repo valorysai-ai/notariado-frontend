@@ -27,6 +27,8 @@ async function guardarLead(lead) {
             if (ok) {
                 // Limpiar lead pendiente si había uno guardado
                 localStorage.removeItem('lead_pendiente')
+                // Enviar a Meta Conversions API
+                await enviarMetaConversion(lead)
                 return true
             }
         } catch (error) {
@@ -76,5 +78,30 @@ async function reenviarLeadPendiente() {
         }
     } catch (e) {
         console.error('Error al reenviar lead pendiente:', e)
+    }
+}
+
+// ─── META CONVERSIONS API ─────────────────────────────────────────────────────
+
+async function enviarMetaConversion(lead) {
+    try {
+        const SUPABASE_FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1/meta-conversions`
+
+        await fetch(SUPABASE_FUNCTIONS_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({
+                email:                lead.email,
+                telefono:             lead.telefono,
+                nombre:               lead.nombre,
+                precio_estimado_bajo: lead.precio_estimado_bajo,
+                precio_estimado_alto: lead.precio_estimado_alto
+            })
+        })
+    } catch (e) {
+        console.warn('Meta Conversions API error:', e)
     }
 }
