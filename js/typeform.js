@@ -447,6 +447,16 @@ async function submitLead() {
     const enviado = await guardarLead(lead)
     if (!enviado) sessionStorage.setItem('supabase_error', 'true')
 
+    // Meta Pixel — evento Lead
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'Lead', {
+            content_name: 'Valoracion Inmobiliaria',
+            content_category: datos.tipo_inmueble === 14 ? 'Piso' : 'Casa',
+            value: resultado.valorCentral,
+            currency: 'EUR'
+        })
+    }
+
     window.location.href = 'resultado.html'
 }
 
