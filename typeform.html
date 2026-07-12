@@ -8,6 +8,25 @@
     <link rel="stylesheet" href="css/typeform.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2212%22 fill=%22%2310b981%22/><text x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22system-ui%22>⌂</text></svg>" type="image/svg+xml">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2212%22 fill=%22%2310b981%22/><text x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22system-ui%22>⌂</text></svg>" type="image/svg+xml">
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '506793339161273');
+    fbq('track', 'PageView');
+    </script>
+    <noscript>
+    <img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=506793339161273&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Meta Pixel -->
 </head>
 <body class="tf-body">
 
@@ -286,17 +305,12 @@
             </div>
         </div>
 
-        <!-- Honeypot — no tocar -->
-        <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
-            <input type="text" id="tf-honeypot" name="website" tabindex="-1" autocomplete="off">
-        </div>
-
         <!-- STEP 10 — Tus datos -->
         <div class="tf-step" id="step-10">
             <div class="tf-step__inner">
                 <div class="tf-step__num">10 →</div>
                 <h2 class="tf-step__titulo">🎉 ¡Tu estimación está lista!</h2>
-                <p class="tf-step__subtitulo">Introduce tus datos para ver el valor de tu vivienda</p>
+                <p class="tf-step__subtitulo">Un último paso para ver el valor de tu vivienda.</p>
                 <div class="tf-form-lead">
                     <div class="tf-input-grupo">
                         <label class="tf-label" for="tf-nombre">Nombre *</label>
@@ -311,12 +325,24 @@
                         <input class="tf-input" type="tel" id="tf-telefono" placeholder="600 000 000">
                     </div>
                     <div class="tf-checkbox-grupo">
-                        <input type="checkbox" id="tf-rgpd" class="tf-checkbox">
+                        <input type="checkbox" id="tf-rgpd" class="tf-checkbox" required>
                         <label for="tf-rgpd" class="tf-checkbox-label">
-                            Acepto la <a href="legal.html" target="_blank">política de privacidad</a> y que me contacten con mi valoración.
+                            * Acepto que Iván López me contacte con el resultado de mi valoración. <a href="legal.html" target="_blank">Política de privacidad</a>
+                        </label>
+                    </div>
+                    <div class="tf-checkbox-grupo">
+                        <input type="checkbox" id="tf-rgpd-marketing" class="tf-checkbox">
+                        <label for="tf-rgpd-marketing" class="tf-checkbox-label">
+                            Acepto recibir novedades del mercado inmobiliario. <span style="color:var(--text-light)">(opcional)</span>
                         </label>
                     </div>
                 </div>
+
+                <!-- Honeypot -->
+                <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
+                    <input type="text" id="tf-honeypot" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
                 <div class="tf-nav">
                     <button class="tf-btn tf-btn--ghost" onclick="prevStep(10)">← Atrás</button>
                     <button class="tf-btn tf-btn--primary" onclick="submitLead()" id="btn-step-10">

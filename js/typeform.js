@@ -439,7 +439,7 @@ async function submitLead() {
         precio_estimado_alto:  resultado.rangoAlto,
         nivel_dato:            resultado.nivel,
         rgpd:                  true,
-        rgpd_marketing:        false,
+        rgpd_marketing:        document.getElementById('tf-rgpd-marketing').checked,
         agente:                new URLSearchParams(window.location.search).get('agente') || 'ivan-lopez-safti',
         created_at:            new Date().toISOString()
     }
