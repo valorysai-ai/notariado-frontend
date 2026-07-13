@@ -304,7 +304,24 @@
                     </div>
                     <div class="tf-input-grupo">
                         <label class="tf-label" for="tf-telefono">Teléfono *</label>
-                        <input class="tf-input" type="tel" id="tf-telefono" placeholder="600 000 000">
+                        <div style="display:flex;gap:8px;align-items:flex-end">
+                            <select id="tf-prefijo" style="border:none;border-bottom:2px solid var(--border);background:transparent;font-size:1.2rem;font-weight:600;padding:12px 4px;outline:none;cursor:pointer;min-width:100px">
+                                <option value="+34">🇪🇸 +34</option>
+                                <option value="+44">🇬🇧 +44</option>
+                                <option value="+49">🇩🇪 +49</option>
+                                <option value="+33">🇫🇷 +33</option>
+                                <option value="+39">🇮🇹 +39</option>
+                                <option value="+31">🇳🇱 +31</option>
+                                <option value="+32">🇧🇪 +32</option>
+                                <option value="+46">🇸🇪 +46</option>
+                                <option value="+47">🇳🇴 +47</option>
+                                <option value="+45">🇩🇰 +45</option>
+                                <option value="+86">🇨🇳 +86</option>
+                                <option value="+7">🇷🇺 +7</option>
+                                <option value="+1">🇺🇸 +1</option>
+                            </select>
+                            <input class="tf-input tf-input--lg" type="tel" id="tf-telefono" placeholder="600 000 000" style="flex:1">
+                        </div>
                     </div>
                     <div class="tf-checkbox-grupo">
                         <input type="checkbox" id="tf-rgpd" class="tf-checkbox" required>
@@ -336,10 +353,25 @@
 
     </main>
 
+    <!-- BANNER COOKIES -->
+    <div class="cookies-banner" id="cookies-banner">
+        <div class="cookies-banner__inner">
+            <p class="cookies-banner__texto">
+                Usamos cookies propias y de terceros (Meta Pixel) para analítica y publicidad.
+                <a href="legal.html#cookies" style="color:#10b981">Más información</a>
+            </p>
+            <div class="cookies-banner__botones">
+                <button class="btn--cookies-reject" onclick="rechazarCookies()">Solo necesarias</button>
+                <button class="btn--cookies-accept" onclick="aceptarCookies()">Aceptar todas</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/algoritmo.js"></script>
     <script src="js/supabase.js"></script>
     <script src="js/typeform.js"></script>
+    <script src="js/cookies.js"></script>
 
 </body>
 </html>

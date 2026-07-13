@@ -43,22 +43,18 @@ function showStep(from, to, direction) {
     const fromEl = document.getElementById(`step-${from}`)
     const toEl   = document.getElementById(`step-${to}`)
 
-    // Preparar el step de destino fuera de pantalla
     toEl.style.transition = 'none'
     toEl.style.transform  = direction === 'back' ? 'translateX(-60px)' : 'translateX(60px)'
     toEl.style.opacity    = '0'
     toEl.style.position   = 'absolute'
     toEl.classList.remove('active', 'exit-left')
 
-    // Forzar reflow
     toEl.offsetHeight
 
-    // Animar salida del step actual
     fromEl.style.transition = ''
     fromEl.style.transform  = direction === 'back' ? 'translateX(60px)' : 'translateX(-60px)'
     fromEl.style.opacity    = '0'
 
-    // Animar entrada del nuevo step
     toEl.style.transition = ''
     toEl.style.transform  = 'translateX(0)'
     toEl.style.opacity    = '1'
@@ -75,11 +71,9 @@ function showStep(from, to, direction) {
         actualizarProgreso(to)
         currentStep = to
 
-        // Focus automático
         const input = toEl.querySelector('.tf-input')
         if (input) setTimeout(() => input.focus(), 100)
 
-        // Restaurar selección previa
         restaurarSeleccion(to)
 
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -179,7 +173,6 @@ function shakeInput(id, mensaje) {
 }
 
 function mostrarError(mensaje) {
-    // Eliminar error anterior si existe
     const prev = document.querySelector('.tf-error')
     if (prev) prev.remove()
 
@@ -197,7 +190,6 @@ function mostrarError(mensaje) {
 // ─── SELECCIÓN DE OPCIONES ────────────────────────────────────────────────────
 
 function selectOption(el, campo, step) {
-    // Desmarcar todas las opciones del mismo grupo
     el.closest('.tf-options').querySelectorAll('.tf-option').forEach(o => {
         o.classList.remove('selected')
     })
@@ -217,7 +209,7 @@ function selectOption(el, campo, step) {
             break
         case 'planta_ascensor':
             const [planta, ascensor] = valor.split('|')
-            datos.planta  = planta
+            datos.planta   = planta
             datos.ascensor = ascensor === 'true'
             break
         case 'estado':
@@ -235,8 +227,6 @@ function selectOption(el, campo, step) {
             break
     }
 
-    // Auto-avanzar al siguiente step tras seleccionar
-    // (excepto step 10 que tiene form)
     if (step < 10) {
         setTimeout(() => nextStep(step), 300)
     }
@@ -319,13 +309,6 @@ function restaurarSeleccion(step) {
                 })
             }
             break
-        case 10:
-            if (document.getElementById('tf-nombre').value === '' && sessionStorage.getItem('tf-nombre')) {
-                document.getElementById('tf-nombre').value = sessionStorage.getItem('tf-nombre')
-                document.getElementById('tf-email').value  = sessionStorage.getItem('tf-email') || ''
-                document.getElementById('tf-telefono').value = sessionStorage.getItem('tf-telefono') || ''
-            }
-            break
     }
 }
 
@@ -375,6 +358,29 @@ async function buscarCP(cp) {
     }
 }
 
+// ─── VERIFICAR TELÉFONO ───────────────────────────────────────────────────────
+
+async function verificarTelefono(telefono, prefijo) {
+    try {
+        const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/verify-phone`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({ telefono, prefijo })
+            }
+        )
+        const data = await response.json()
+        return data.valid
+    } catch (e) {
+        console.warn('Error verificando teléfono:', e)
+        return true // Si falla la verificación, dejamos pasar para no bloquear al usuario
+    }
+}
+
 // ─── SUBMIT LEAD ──────────────────────────────────────────────────────────────
 
 async function submitLead() {
@@ -387,14 +393,16 @@ async function submitLead() {
     const nombre   = document.getElementById('tf-nombre').value.trim()
     const email    = document.getElementById('tf-email').value.trim()
     const telefono = document.getElementById('tf-telefono').value.trim()
+    const prefijo  = document.getElementById('tf-prefijo').value
     const rgpd     = document.getElementById('tf-rgpd').checked
+    const rgpd_marketing = document.getElementById('tf-rgpd-marketing').checked
 
     if (!nombre) { mostrarError('Introduce tu nombre'); return }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         mostrarError('Introduce un email válido'); return
     }
-    if (!telefono || !/^[679]\d{8}$/.test(telefono.replace(/\s/g, ''))) {
-        mostrarError('Introduce un teléfono español válido'); return
+    if (!telefono) {
+        mostrarError('Introduce tu número de teléfono'); return
     }
     if (!rgpd) { mostrarError('Debes aceptar la política de privacidad'); return }
 
@@ -418,7 +426,6 @@ async function submitLead() {
     const resultado = calcularValoracion(formulario, precios)
     if (resultado.error) { mostrarError(resultado.error); return }
 
-    // Guardar en sessionStorage
     sessionStorage.setItem('resultado',  JSON.stringify(resultado))
     sessionStorage.setItem('formulario', JSON.stringify(formulario))
 
@@ -427,10 +434,19 @@ async function submitLead() {
     btn.classList.add('tf-btn--loading')
     btn.disabled = true
 
+    // Verificar teléfono con Twilio
+    const telefonoValido = await verificarTelefono(telefono, prefijo)
+    if (!telefonoValido) {
+        btn.classList.remove('tf-btn--loading')
+        btn.disabled = false
+        mostrarError('El número de teléfono no es válido. Por favor compruébalo.')
+        return
+    }
+
     const lead = {
         nombre,
         email,
-        telefono,
+        telefono:              `${prefijo}${telefono.replace(/\s/g, '')}`,
         cp:                    datos.cp,
         superficie:            datos.superficie,
         tipo_inmueble:         datos.tipo_inmueble === 14 ? 'Piso' : 'Casa',
@@ -439,7 +455,7 @@ async function submitLead() {
         precio_estimado_alto:  resultado.rangoAlto,
         nivel_dato:            resultado.nivel,
         rgpd:                  true,
-        rgpd_marketing:        document.getElementById('tf-rgpd-marketing').checked,
+        rgpd_marketing,
         agente:                new URLSearchParams(window.location.search).get('agente') || 'ivan-lopez-safti',
         created_at:            new Date().toISOString()
     }
@@ -477,11 +493,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await cargarPrecios()
     await reenviarLeadPendiente()
 
-    // Activar primer step
     document.getElementById('step-1').classList.add('active')
     actualizarProgreso(1)
 
-    // Listener CP
     document.getElementById('tf-cp').addEventListener('input', e => {
         const cp = e.target.value.trim()
         datos.cp = cp.length === 5 ? cp : null
