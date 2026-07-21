@@ -374,10 +374,11 @@ async function verificarTelefono(telefono, prefijo) {
             }
         )
         const data = await response.json()
+        console.log('Twilio response:', data)
         return data.valid
     } catch (e) {
         console.warn('Error verificando teléfono:', e)
-        return true // Si falla la verificación, dejamos pasar para no bloquear al usuario
+        return true
     }
 }
 
@@ -390,11 +391,11 @@ async function submitLead() {
         return
     }
 
-    const nombre   = document.getElementById('tf-nombre').value.trim()
-    const email    = document.getElementById('tf-email').value.trim()
-    const telefono = document.getElementById('tf-telefono').value.trim()
-    const prefijo  = document.getElementById('tf-prefijo').value
-    const rgpd     = document.getElementById('tf-rgpd').checked
+    const nombre         = document.getElementById('tf-nombre').value.trim()
+    const email          = document.getElementById('tf-email').value.trim()
+    const telefono       = document.getElementById('tf-telefono').value.trim()
+    const prefijo        = document.getElementById('tf-prefijo').value
+    const rgpd           = document.getElementById('tf-rgpd').checked
     const rgpd_marketing = document.getElementById('tf-rgpd-marketing').checked
 
     if (!nombre) { mostrarError('Introduce tu nombre'); return }
