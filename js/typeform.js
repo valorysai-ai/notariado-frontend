@@ -364,7 +364,7 @@ async function verificarTelefono(telefono, prefijo) {
     try {
         console.log('SUPABASE_URL:', SUPABASE_URL)
         const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/verify-phone`,
+            `${SUPABASE_URL}/functions/v1/clever-function`,
             {
                 method: 'POST',
                 headers: {
