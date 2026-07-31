@@ -22,6 +22,19 @@ const datos = {
 
 let precios = null
 
+const STEP_NAMES = {
+    1: 'Codigo Postal',
+    2: 'Tipo Inmueble',
+    3: 'Superficie',
+    4: 'Habitaciones',
+    5: 'Banos',
+    6: 'Planta Ascensor',
+    7: 'Estado',
+    8: 'Terraza',
+    9: 'Extras',
+    10: 'Datos Contacto'
+}
+
 // ─── CARGAR DATOS ─────────────────────────────────────────────────────────────
 
 async function cargarPrecios() {
@@ -82,6 +95,15 @@ function showStep(from, to, direction) {
 
 function nextStep(from) {
     if (!validarStep(from)) return
+
+    // Meta Pixel — tracking por step
+    if (typeof fbq !== 'undefined') {
+        fbq('trackCustom', 'StepCompleted', {
+            step_number: from,
+            step_name: STEP_NAMES[from] || `Step ${from}`
+        })
+    }
+
     showStep(from, from + 1, 'forward')
 }
 
@@ -364,7 +386,7 @@ async function verificarTelefono(telefono, prefijo) {
     try {
         console.log('SUPABASE_URL:', SUPABASE_URL)
         const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/clever-function`,
+            `${SUPABASE_URL}/functions/v1/verify-phone`,
             {
                 method: 'POST',
                 headers: {
@@ -408,7 +430,6 @@ async function submitLead() {
     }
     if (!rgpd) { mostrarError('Debes aceptar la política de privacidad'); return }
 
-    // Calcular valoración
     const formulario = {
         cp:                    datos.cp,
         superficie:            datos.superficie,
