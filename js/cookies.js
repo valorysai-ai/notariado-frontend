@@ -20,13 +20,13 @@ function cargarMetaPixel() {
 
 function mostrarBannerCookies() {
     const preferencia = localStorage.getItem('cookies_aceptadas')
+    const banner = document.getElementById('cookies-banner')
 
     if (!preferencia) {
-        document.getElementById('cookies-banner').classList.add('visible')
+        if (banner) banner.classList.add('visible')
         return
     }
 
-    // Si ya aceptó todas, cargar pixel
     if (preferencia === 'all') {
         cargarMetaPixel()
     }
@@ -34,14 +34,15 @@ function mostrarBannerCookies() {
 
 function aceptarCookies() {
     localStorage.setItem('cookies_aceptadas', 'all')
-    document.getElementById('cookies-banner').classList.remove('visible')
+    const banner = document.getElementById('cookies-banner')
+    if (banner) banner.classList.remove('visible')
     cargarMetaPixel()
 }
 
 function rechazarCookies() {
     localStorage.setItem('cookies_aceptadas', 'necessary')
-    document.getElementById('cookies-banner').classList.remove('visible')
-    // No cargar pixel
+    const banner = document.getElementById('cookies-banner')
+    if (banner) banner.classList.remove('visible')
 }
 
 document.addEventListener('DOMContentLoaded', mostrarBannerCookies)
