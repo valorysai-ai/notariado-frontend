@@ -35,7 +35,7 @@
             <div class="resultado__badges">
                 <span class="badge badge--green" id="badge-precision">⭐ Precisión ~90%</span>
                 <span class="badge badge--blue">📊 Datos del Notariado</span>
-                <span class="badge badge--green" id="badge-fecha"></span>
+                <span class="badge badge--green" id="badge-fecha" style="display:none"></span>
             </div>
 
             <div class="resultado__aviso" id="resultado-aviso" style="display:none"></div>
@@ -75,8 +75,23 @@
         </div>
     </footer>
 
+    <!-- BANNER COOKIES -->
+    <div class="cookies-banner" id="cookies-banner">
+        <div class="cookies-banner__inner">
+            <p class="cookies-banner__texto">
+                Usamos cookies propias y de terceros (Meta Pixel) para analítica y publicidad.
+                <a href="legal.html#cookies" style="color:#10b981">Más información</a>
+            </p>
+            <div class="cookies-banner__botones">
+                <button class="btn--cookies-reject" onclick="rechazarCookies()">Solo necesarias</button>
+                <button class="btn--cookies-accept" onclick="aceptarCookies()">Aceptar todas</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/algoritmo.js"></script>
     <script src="js/resultado.js"></script>
+    <script src="js/cookies.js"></script>
 
 </body>
 </html>
