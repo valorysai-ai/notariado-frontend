@@ -1,11 +1,17 @@
 // ─── ESTADO ───────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 10
+const TOTAL_STEPS = 15
 let currentStep = 1
 let map = null
 let mapMarker = null
 
 const datos = {
+    // Cualificación
+    es_propietario: null,
+    quiere_vender: null,
+    plazo_venta: null,
+    valor_percibido: null,
+    // Inmueble
     cp: null,
     tipo_inmueble: null,
     superficie: null,
@@ -23,16 +29,21 @@ const datos = {
 let precios = null
 
 const STEP_NAMES = {
-    1: 'Codigo Postal',
-    2: 'Tipo Inmueble',
-    3: 'Superficie',
-    4: 'Habitaciones',
-    5: 'Banos',
-    6: 'Planta Ascensor',
-    7: 'Estado',
-    8: 'Terraza',
-    9: 'Extras',
-    10: 'Datos Contacto'
+    1: 'Es Propietario',
+    2: 'Quiere Vender',
+    3: 'Plazo Venta',
+    4: 'Valor Percibido',
+    5: 'Codigo Postal',
+    6: 'Tipo Inmueble',
+    7: 'Superficie',
+    8: 'Habitaciones',
+    9: 'Banos',
+    10: 'Planta Ascensor',
+    11: 'Estado',
+    12: 'Terraza',
+    13: 'Extras',
+    14: 'Datos Contacto',
+    15: 'Verificacion OTP'
 }
 
 // ─── CARGAR DATOS ─────────────────────────────────────────────────────────────
@@ -42,12 +53,81 @@ async function cargarPrecios() {
     precios = await response.json()
 }
 
+// ─── CALCULAR TIPO DE LEAD ────────────────────────────────────────────────────
+
+function calcularTipoLead() {
+    if (datos.es_propietario && datos.quiere_vender) {
+        if (datos.plazo_venta === '3 meses') return 'caliente'
+        if (datos.plazo_venta === '6 meses') return 'tibio'
+        return 'frio'
+    }
+    if (datos.es_propietario && !datos.quiere_vender) return 'frio'
+    return 'curioso'
+}
+
 // ─── PROGRESO ─────────────────────────────────────────────────────────────────
 
 function actualizarProgreso(step) {
     const pct = Math.round((step / TOTAL_STEPS) * 100)
     document.getElementById('progress-fill').style.width = `${pct}%`
     document.getElementById('progress-text').textContent = `${step} de ${TOTAL_STEPS}`
+}
+
+// ─── ADAPTAR STEP 3 ───────────────────────────────────────────────────────────
+
+function adaptarStep3() {
+    const titulo    = document.querySelector('#step-3 .tf-step__titulo')
+    const subtitulo = document.querySelector('#step-3 .tf-step__subtitulo')
+    const opciones  = document.querySelector('#step-3 .tf-options')
+
+    if (datos.quiere_vender) {
+        titulo.textContent    = '¿En qué plazo te gustaría venderla?'
+        subtitulo.textContent = 'Esto nos ayuda a preparar la mejor estrategia para ti'
+        opciones.innerHTML = `
+            <button class="tf-option" data-value="3 meses" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">⚡</span>
+                <span class="tf-option__label">Menos de 3 meses</span>
+                <span class="tf-option__desc">Lo antes posible</span>
+            </button>
+            <button class="tf-option" data-value="6 meses" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">📅</span>
+                <span class="tf-option__label">Entre 3 y 6 meses</span>
+            </button>
+            <button class="tf-option" data-value="1 año" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">🗓️</span>
+                <span class="tf-option__label">Entre 6 meses y 1 año</span>
+            </button>
+            <button class="tf-option" data-value="más de 1 año" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">🔮</span>
+                <span class="tf-option__label">Más de 1 año</span>
+                <span class="tf-option__desc">Todavía explorando opciones</span>
+            </button>
+        `
+    } else {
+        titulo.textContent    = '¿En qué horizonte temporal lo contemplarías?'
+        subtitulo.textContent = 'Aunque no sea ahora, nos ayuda a entender tus planes'
+        opciones.innerHTML = `
+            <button class="tf-option" data-value="menos de 1 año" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">📅</span>
+                <span class="tf-option__label">En menos de 1 año</span>
+            </button>
+            <button class="tf-option" data-value="1 a 3 años" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">🗓️</span>
+                <span class="tf-option__label">Entre 1 y 3 años</span>
+            </button>
+            <button class="tf-option" data-value="más de 3 años" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">🔮</span>
+                <span class="tf-option__label">Más de 3 años</span>
+            </button>
+            <button class="tf-option" data-value="indefinido" onclick="selectOption(this, 'plazo_venta', 3)">
+                <span class="tf-option__icon">🤷</span>
+                <span class="tf-option__label">No lo tengo claro</span>
+            </button>
+        `
+    }
+
+    // Limpiar selección previa
+    datos.plazo_venta = null
 }
 
 // ─── NAVEGACIÓN ───────────────────────────────────────────────────────────────
@@ -88,7 +168,6 @@ function showStep(from, to, direction) {
         if (input) setTimeout(() => input.focus(), 100)
 
         restaurarSeleccion(to)
-
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }, 600)
 }
@@ -96,7 +175,9 @@ function showStep(from, to, direction) {
 function nextStep(from) {
     if (!validarStep(from)) return
 
-    // Meta Pixel — tracking por step
+    // Adaptar step 3 según respuesta del step 2
+    if (from === 2) adaptarStep3()
+
     if (typeof fbq !== 'undefined') {
         fbq('trackCustom', 'StepCompleted', {
             step_number: from,
@@ -117,18 +198,40 @@ function prevStep(from) {
 function validarStep(step) {
     switch(step) {
         case 1:
+            if (datos.es_propietario === null) {
+                mostrarError('Selecciona una opción para continuar')
+                return false
+            }
+            return true
+        case 2:
+            if (datos.quiere_vender === null) {
+                mostrarError('Selecciona una opción para continuar')
+                return false
+            }
+            return true
+        case 3:
+            if (!datos.plazo_venta) {
+                mostrarError('Selecciona el plazo previsto')
+                return false
+            }
+            return true
+        case 4:
+            const vp = document.getElementById('tf-valor-percibido').value
+            datos.valor_percibido = vp ? parseInt(vp) : null
+            return true
+        case 5:
             if (!datos.cp || !/^\d{5}$/.test(datos.cp)) {
                 shakeInput('tf-cp', 'Introduce un código postal válido (5 dígitos)')
                 return false
             }
             return true
-        case 2:
+        case 6:
             if (!datos.tipo_inmueble) {
                 mostrarError('Selecciona el tipo de inmueble')
                 return false
             }
             return true
-        case 3:
+        case 7:
             const sup = parseFloat(document.getElementById('tf-superficie').value)
             if (isNaN(sup) || sup < 25) {
                 shakeInput('tf-superficie', 'La superficie mínima es 25 m²')
@@ -140,37 +243,37 @@ function validarStep(step) {
             }
             datos.superficie = sup
             return true
-        case 4:
+        case 8:
             if (!datos.habitaciones) {
                 mostrarError('Selecciona el número de habitaciones')
                 return false
             }
             return true
-        case 5:
+        case 9:
             if (!datos.banos) {
                 mostrarError('Selecciona el número de baños')
                 return false
             }
             return true
-        case 6:
+        case 10:
             if (!datos.planta) {
                 mostrarError('Selecciona la planta y si tiene ascensor')
                 return false
             }
             return true
-        case 7:
+        case 11:
             if (!datos.estado) {
                 mostrarError('Selecciona el estado de conservación')
                 return false
             }
             return true
-        case 8:
+        case 12:
             if (datos.tieneTerraza === null) {
                 mostrarError('Selecciona la opción de terraza')
                 return false
             }
             return true
-        case 9:
+        case 13:
             if (datos.tieneParking === null) {
                 mostrarError('Selecciona los extras')
                 return false
@@ -220,6 +323,15 @@ function selectOption(el, campo, step) {
     const valor = el.dataset.value
 
     switch(campo) {
+        case 'es_propietario':
+            datos.es_propietario = valor === 'true'
+            break
+        case 'quiere_vender':
+            datos.quiere_vender = valor === 'true'
+            break
+        case 'plazo_venta':
+            datos.plazo_venta = valor
+            break
         case 'tipo_inmueble':
             datos.tipo_inmueble = parseInt(valor)
             break
@@ -249,7 +361,7 @@ function selectOption(el, campo, step) {
             break
     }
 
-    if (step < 10) {
+    if (step < 14) {
         setTimeout(() => nextStep(step), 300)
     }
 }
@@ -261,44 +373,64 @@ function restaurarSeleccion(step) {
 
     switch(step) {
         case 1:
+            if (datos.es_propietario !== null) {
+                stepEl.querySelectorAll('.tf-option').forEach(o => {
+                    if (o.dataset.value === String(datos.es_propietario)) o.classList.add('selected')
+                })
+            }
+            break
+        case 2:
+            if (datos.quiere_vender !== null) {
+                stepEl.querySelectorAll('.tf-option').forEach(o => {
+                    if (o.dataset.value === String(datos.quiere_vender)) o.classList.add('selected')
+                })
+            }
+            break
+        case 3:
+            if (datos.plazo_venta) {
+                stepEl.querySelectorAll('.tf-option').forEach(o => {
+                    if (o.dataset.value === datos.plazo_venta) o.classList.add('selected')
+                })
+            }
+            break
+        case 4:
+            if (datos.valor_percibido) {
+                document.getElementById('tf-valor-percibido').value = datos.valor_percibido
+            }
+            break
+        case 5:
             if (datos.cp) {
                 document.getElementById('tf-cp').value = datos.cp
                 buscarCP(datos.cp)
             }
             break
-        case 2:
+        case 6:
             if (datos.tipo_inmueble) {
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
-                    if (parseInt(o.dataset.value) === datos.tipo_inmueble) {
-                        o.classList.add('selected')
-                    }
+                    if (parseInt(o.dataset.value) === datos.tipo_inmueble) o.classList.add('selected')
                 })
             }
             break
-        case 3:
+        case 7:
             if (datos.superficie) {
                 document.getElementById('tf-superficie').value = datos.superficie
             }
             break
-        case 4:
+        case 8:
             if (datos.habitaciones) {
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
-                    if (parseInt(o.dataset.value) === datos.habitaciones) {
-                        o.classList.add('selected')
-                    }
+                    if (parseInt(o.dataset.value) === datos.habitaciones) o.classList.add('selected')
                 })
             }
             break
-        case 5:
+        case 9:
             if (datos.banos) {
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
-                    if (parseInt(o.dataset.value) === datos.banos) {
-                        o.classList.add('selected')
-                    }
+                    if (parseInt(o.dataset.value) === datos.banos) o.classList.add('selected')
                 })
             }
             break
-        case 6:
+        case 10:
             if (datos.planta) {
                 const val = `${datos.planta}|${datos.ascensor}`
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
@@ -306,14 +438,14 @@ function restaurarSeleccion(step) {
                 })
             }
             break
-        case 7:
+        case 11:
             if (datos.estado) {
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
                     if (o.dataset.value === datos.estado) o.classList.add('selected')
                 })
             }
             break
-        case 8:
+        case 12:
             if (datos.tieneTerraza !== null) {
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
                     const [tiene, m2] = o.dataset.value.split('|')
@@ -323,7 +455,7 @@ function restaurarSeleccion(step) {
                 })
             }
             break
-        case 9:
+        case 13:
             if (datos.tieneParking !== null) {
                 const val = `${datos.tieneParking}|${datos.tieneTrastero}`
                 stepEl.querySelectorAll('.tf-option').forEach(o => {
@@ -380,55 +512,141 @@ async function buscarCP(cp) {
     }
 }
 
-// ─── VERIFICAR TELÉFONO ───────────────────────────────────────────────────────
+// ─── OTP — ENVIAR ─────────────────────────────────────────────────────────────
 
-async function verificarTelefono(telefono, prefijo) {
+async function enviarOTP() {
+    if (document.getElementById('tf-honeypot').value) {
+        window.location.href = 'resultado.html'
+        return
+    }
+
+    const nombre   = document.getElementById('tf-nombre').value.trim()
+    const email    = document.getElementById('tf-email').value.trim()
+    const telefono = document.getElementById('tf-telefono').value.trim()
+    const prefijo  = document.getElementById('tf-prefijo').value
+    const rgpd     = document.getElementById('tf-rgpd').checked
+
+    if (!nombre) { mostrarError('Introduce tu nombre'); return }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        mostrarError('Introduce un email válido'); return
+    }
+    if (!telefono) { mostrarError('Introduce tu número de teléfono'); return }
+    if (!rgpd) { mostrarError('Debes aceptar la política de privacidad'); return }
+
+    const btn = document.getElementById('btn-step-14')
+    btn.classList.add('tf-btn--loading')
+    btn.disabled = true
+
     try {
-        console.log('SUPABASE_URL:', SUPABASE_URL)
-        const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/verify-phone`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({ telefono, prefijo })
-            }
-        )
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ telefono, prefijo })
+        })
+
         const data = await response.json()
-        console.log('Twilio response:', data)
-        return data.valid
+
+        if (!data.success) {
+            mostrarError('No hemos podido enviar el código. Comprueba el número.')
+            btn.classList.remove('tf-btn--loading')
+            btn.disabled = false
+            return
+        }
+
+        document.getElementById('otp-subtitulo').textContent =
+            `Hemos enviado un código de 6 dígitos a ${prefijo} ${telefono}`
+
+        btn.classList.remove('tf-btn--loading')
+        btn.disabled = false
+
+        showStep(14, 15, 'forward')
+        actualizarProgreso(15)
+
     } catch (e) {
-        console.warn('Error verificando teléfono:', e)
-        return true
+        console.error('Error enviando OTP:', e)
+        mostrarError('Error de conexión. Inténtalo de nuevo.')
+        btn.classList.remove('tf-btn--loading')
+        btn.disabled = false
+    }
+}
+
+// ─── OTP — REENVIAR ───────────────────────────────────────────────────────────
+
+async function reenviarOTP() {
+    const telefono = document.getElementById('tf-telefono').value.trim()
+    const prefijo  = document.getElementById('tf-prefijo').value
+
+    try {
+        await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ telefono, prefijo })
+        })
+        mostrarError('Código reenviado ✓')
+    } catch (e) {
+        mostrarError('Error al reenviar. Inténtalo de nuevo.')
+    }
+}
+
+// ─── OTP — VERIFICAR Y SUBMIT ─────────────────────────────────────────────────
+
+async function verificarOTP() {
+    const codigo   = document.getElementById('tf-otp').value.trim()
+    const telefono = document.getElementById('tf-telefono').value.trim()
+    const prefijo  = document.getElementById('tf-prefijo').value
+
+    if (!codigo || codigo.length < 4) {
+        mostrarError('Introduce el código que has recibido por SMS')
+        return
+    }
+
+    const btn = document.getElementById('btn-step-15')
+    btn.classList.add('tf-btn--loading')
+    btn.disabled = true
+
+    try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/verify-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ telefono, prefijo, codigo })
+        })
+
+        const data = await response.json()
+
+        if (!data.valid) {
+            mostrarError('Código incorrecto. Compruébalo e inténtalo de nuevo.')
+            btn.classList.remove('tf-btn--loading')
+            btn.disabled = false
+            return
+        }
+
+        await submitLead()
+
+    } catch (e) {
+        console.error('Error verificando OTP:', e)
+        mostrarError('Error de conexión. Inténtalo de nuevo.')
+        btn.classList.remove('tf-btn--loading')
+        btn.disabled = false
     }
 }
 
 // ─── SUBMIT LEAD ──────────────────────────────────────────────────────────────
 
 async function submitLead() {
-    // Anti-bot: verificar honeypot PRIMERO
-    if (document.getElementById('tf-honeypot').value) {
-        window.location.href = 'resultado.html'
-        return
-    }
-
     const nombre         = document.getElementById('tf-nombre').value.trim()
     const email          = document.getElementById('tf-email').value.trim()
     const telefono       = document.getElementById('tf-telefono').value.trim()
     const prefijo        = document.getElementById('tf-prefijo').value
-    const rgpd           = document.getElementById('tf-rgpd').checked
     const rgpd_marketing = document.getElementById('tf-rgpd-marketing').checked
-
-    if (!nombre) { mostrarError('Introduce tu nombre'); return }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        mostrarError('Introduce un email válido'); return
-    }
-    if (!telefono) {
-        mostrarError('Introduce tu número de teléfono'); return
-    }
-    if (!rgpd) { mostrarError('Debes aceptar la política de privacidad'); return }
 
     const formulario = {
         cp:                    datos.cp,
@@ -452,20 +670,6 @@ async function submitLead() {
     sessionStorage.setItem('resultado',  JSON.stringify(resultado))
     sessionStorage.setItem('formulario', JSON.stringify(formulario))
 
-    // Spinner
-    const btn = document.getElementById('btn-step-10')
-    btn.classList.add('tf-btn--loading')
-    btn.disabled = true
-
-    // Verificar teléfono con Twilio
-    const telefonoValido = await verificarTelefono(telefono, prefijo)
-    if (!telefonoValido) {
-        btn.classList.remove('tf-btn--loading')
-        btn.disabled = false
-        mostrarError('El número de teléfono no es válido. Por favor compruébalo.')
-        return
-    }
-
     const lead = {
         nombre,
         email,
@@ -480,13 +684,17 @@ async function submitLead() {
         rgpd:                  true,
         rgpd_marketing,
         agente:                new URLSearchParams(window.location.search).get('agente') || 'ivan-lopez-safti',
+        es_propietario:        datos.es_propietario,
+        quiere_vender:         datos.quiere_vender,
+        plazo_venta:           datos.plazo_venta,
+        valor_percibido:       datos.valor_percibido,
+        tipo_lead:             calcularTipoLead(),
         created_at:            new Date().toISOString()
     }
 
     const enviado = await guardarLead(lead)
     if (!enviado) sessionStorage.setItem('supabase_error', 'true')
 
-    // Meta Pixel — evento Lead
     if (typeof fbq !== 'undefined') {
         fbq('track', 'Lead', {
             content_name: 'Valoracion Inmobiliaria',
@@ -506,7 +714,8 @@ document.addEventListener('keydown', e => {
         const activeStep = document.querySelector('.tf-step.active')
         if (!activeStep) return
         const step = parseInt(activeStep.id.replace('step-', ''))
-        if (step < 10) nextStep(step)
+        if (step < 14) nextStep(step)
+        if (step === 15) verificarOTP()
     }
 })
 
