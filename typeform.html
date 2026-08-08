@@ -448,35 +448,11 @@
                 <div class="tf-nav">
                     <button class="tf-btn tf-btn--ghost" onclick="prevStep(14)">← Atrás</button>
                     <button class="tf-btn tf-btn--primary" onclick="enviarOTP()" id="btn-step-14">
-                        Recibir código →
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- STEP 15 — Verificación OTP -->
-        <div class="tf-step" id="step-15">
-            <div class="tf-step__inner">
-                <div class="tf-step__num">15 →</div>
-                <h2 class="tf-step__titulo">Confirma tu número</h2>
-                <p class="tf-step__subtitulo" id="otp-subtitulo">Hemos enviado un código de 6 dígitos a tu teléfono.</p>
-                <div class="tf-input-wrapper">
-                    <input class="tf-input tf-input--lg" type="number" id="tf-otp" placeholder="123456" style="letter-spacing:0.3em;max-width:220px">
-                </div>
-                <p style="font-size:13px;color:var(--text-muted);margin-top:16px">
-                    ¿No has recibido el código?
-                    <button onclick="reenviarOTP()" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:13px;padding:0;text-decoration:underline">Reenviar</button>
-                </p>
-                <div class="tf-nav">
-                    <button class="tf-btn tf-btn--ghost" onclick="prevStep(15)">← Atrás</button>
-                    <button class="tf-btn tf-btn--primary" onclick="verificarOTP()" id="btn-step-15">
                         Ver mi estimación →
                     </button>
                 </div>
             </div>
         </div>
-
-    </main>
 
     <!-- BANNER COOKIES -->
     <div class="cookies-banner" id="cookies-banner">

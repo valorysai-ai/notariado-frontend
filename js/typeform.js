@@ -1,6 +1,6 @@
 // ─── ESTADO ───────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 15
+const TOTAL_STEPS = 14
 let currentStep = 1
 let map = null
 let mapMarker = null
@@ -715,7 +715,6 @@ document.addEventListener('keydown', e => {
         if (!activeStep) return
         const step = parseInt(activeStep.id.replace('step-', ''))
         if (step < 14) nextStep(step)
-        if (step === 15) verificarOTP()
     }
 })
 
