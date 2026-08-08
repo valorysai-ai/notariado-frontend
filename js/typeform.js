@@ -549,12 +549,12 @@ async function enviarOTP() {
 
         const data = await response.json()
 
-        if (!data.success) {
-            mostrarError('No hemos podido enviar el código. Comprueba el número.')
-            btn.classList.remove('tf-btn--loading')
-            btn.disabled = false
-            return
-        }
+        // if (!data.success) {
+        //     mostrarError('No hemos podido enviar el código. Comprueba el número.')
+        //     btn.classList.remove('tf-btn--loading')
+        //     btn.disabled = false
+        //     return
+        // }
 
         document.getElementById('otp-subtitulo').textContent =
             `Hemos enviado un código de 6 dígitos a ${prefijo} ${telefono}`
@@ -622,12 +622,12 @@ async function verificarOTP() {
 
         const data = await response.json()
 
-        if (!data.valid) {
-            mostrarError('Código incorrecto. Compruébalo e inténtalo de nuevo.')
-            btn.classList.remove('tf-btn--loading')
-            btn.disabled = false
-            return
-        }
+        // if (!data.valid) {
+        //     mostrarError('Código incorrecto. Compruébalo e inténtalo de nuevo.')
+        //     btn.classList.remove('tf-btn--loading')
+        //     btn.disabled = false
+        //     return
+        // }
 
         await submitLead()
 
