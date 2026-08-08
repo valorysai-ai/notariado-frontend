@@ -1,7 +1,7 @@
-// ─── META PIXEL ───────────────────────────────────────────────────────────────
+// ─── META PIXEL CON CONSENT MODE ─────────────────────────────────────────────
 
-function cargarMetaPixel() {
-    if (window.fbq) return // ya cargado
+function inicializarPixel() {
+    if (window.fbq) return
 
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -12,8 +12,10 @@ function cargarMetaPixel() {
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
 
-    fbq('init', '506793339161273');
-    fbq('track', 'PageView');
+    // Consent Mode — revocado por defecto (sin cookies, sin identificadores)
+    fbq('consent', 'revoke')
+    fbq('init', '506793339161273')
+    fbq('track', 'PageView')
 }
 
 // ─── BANNER DE COOKIES ────────────────────────────────────────────────────────
@@ -22,13 +24,17 @@ function mostrarBannerCookies() {
     const preferencia = localStorage.getItem('cookies_aceptadas')
     const banner = document.getElementById('cookies-banner')
 
+    // Inicializar pixel siempre — con consent revocado
+    inicializarPixel()
+
     if (!preferencia) {
         if (banner) banner.classList.add('visible')
         return
     }
 
+    // Si ya aceptó antes — grant consent
     if (preferencia === 'all') {
-        cargarMetaPixel()
+        fbq('consent', 'grant')
     }
 }
 
@@ -36,13 +42,15 @@ function aceptarCookies() {
     localStorage.setItem('cookies_aceptadas', 'all')
     const banner = document.getElementById('cookies-banner')
     if (banner) banner.classList.remove('visible')
-    cargarMetaPixel()
+    fbq('consent', 'grant')
+    fbq('track', 'PageView')
 }
 
 function rechazarCookies() {
     localStorage.setItem('cookies_aceptadas', 'necessary')
     const banner = document.getElementById('cookies-banner')
     if (banner) banner.classList.remove('visible')
+    // consent ya está revocado — no hacemos nada más
 }
 
 document.addEventListener('DOMContentLoaded', mostrarBannerCookies)
