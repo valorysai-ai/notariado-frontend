@@ -11,6 +11,12 @@ let mapMarker = null
 // Cambiar a false solo cuando ya se haya validado todo el flujo visualmente.
 const DEV_MODE_OTP = false
 
+// ─── OTP · INTERRUPTOR GENERAL ──────────────────────────────────────────────────
+// false → NO se pide verificación por SMS: tras la animación de carga se guarda
+//         el lead, se dispara el evento Lead y se muestra la valoración directamente.
+// true  → flujo original con OTP (Twilio Verify).
+const OTP_ACTIVO = false
+
 const datos = {
     es_propietario: null,
     quiere_vender: null,
@@ -800,9 +806,9 @@ async function llamarVerifyOtp(telefono, prefijo, codigo) {
 
 // ─── INICIAR VERIFICACIÓN (antes: submitLead) ─────────────────────────────────
 // Valida el formulario, calcula la estimación, GUARDA el lead (Supabase + GHL
-// + Meta CAPI) de inmediato — pase lo que pase con el OTP después — y envía
-// el SMS de verificación. La estimación NO se muestra hasta que el código
-// sea correcto en confirmarOtp().
+// + Meta CAPI) de inmediato y, si OTP_ACTIVO es true, envía el SMS de
+// verificación. Con OTP_ACTIVO = false se salta el SMS y se muestra la
+// valoración directamente tras la animación de carga.
 
 async function iniciarVerificacion() {
     if (document.getElementById('tf-honeypot').value) {
@@ -948,10 +954,6 @@ async function iniciarVerificacion() {
     }
 
     // El lead se guarda SIEMPRE en este punto — verifique o no el OTP después.
-    // Se ESPERA (await) a que termine antes de continuar: si no, podríamos llegar
-    // a la pantalla del OTP sin que la fila exista aún en Supabase, y el PATCH
-    // de marcarTelefonoVerificado() fallaría al no encontrar ninguna fila que
-    // coincida con el event_id.
     enviarGHL(payloadGHL).catch(() => {})
 
     // Guardamos lo necesario para la verificación y para el evento Meta posterior
@@ -960,6 +962,28 @@ async function iniciarVerificacion() {
     otpState.resultado    = resultado
     otpState.eventId      = eventId
     otpState.tipoInmueble = datos.tipo_inmueble
+
+    // ─── SIN OTP: animación + guardar lead + evento Lead + resultado ──────────
+    if (!OTP_ACTIVO) {
+        const [, leadGuardadoSinOtp] = await Promise.all([
+            mostrarOverlayCarga(),
+            guardarLead(lead)
+        ])
+
+        if (!leadGuardadoSinOtp) sessionStorage.setItem('supabase_error', 'true')
+
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'Lead', {
+                content_name: 'Valoracion Inmobiliaria',
+                content_category: datos.tipo_inmueble === 14 ? 'Piso' : 'Casa',
+                value: resultado.valorCentral,
+                currency: 'EUR'
+            }, { eventID: eventId })
+        }
+
+        window.location.href = 'resultado.html'
+        return
+    }
 
     // El overlay de carga, el envío del SMS y el guardado en Supabase ocurren EN
     // PARALELO — el usuario ve la animación de "analizando tu vivienda" mientras
